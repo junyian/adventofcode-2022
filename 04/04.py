@@ -13,7 +13,6 @@ for l in lines:
 print(score)
 
 score = len(lines)
-print(score)
 for l in lines:
     m = re.match(r"(\d+)-(\d+),(\d+)-(\d+)", l.strip())
     pmin1, pmax1, pmin2, pmax2 = int(m.group(1)), int(m.group(2)), int(m.group(3)), int(m.group(4))
