@@ -24,7 +24,7 @@ for i in range(bottom-1, -1, -1): # start parsing from bottom of the stack
         if c.isalpha():
             stacks[j].append(c)
 
-stacks2 = stacks.copy() # reuse stack for part 2
+stacks2 = stacks.deepcopy() # reuse stack for part 2
 
 # move!
 for i in range(bottom+2, len(lines)):
@@ -43,9 +43,15 @@ print(o)
 
 # move #2
 print(stacks2)
-# for i in range(bottom+2, len(lines)):
-#     m = re.match(r"move (\d+) from (\d+) to (\d+)", lines[i].strip())
-#     s_move, s_from, s_to = int(m.group(1)), int(m.group(2)), int(m.group(3))
-#     for j in range(s_move):
-#         v.append(stacks2[s_from-1].pop())
-#     stacks[s_to-1].append(v[::-1])
+for i in range(bottom+2, len(lines)):
+    m = re.match(r"move (\d+) from (\d+) to (\d+)", lines[i].strip())
+    s_move, s_from, s_to = int(m.group(1)), int(m.group(2)), int(m.group(3))
+    v = []
+    for j in range(s_move):
+        v.append(stacks2[s_from-1].pop())
+    stacks[s_to-1].append(v[::-1])
+# get top of stacks
+o = ''
+for i in stacks2:
+    o += i.pop()
+print(o)
