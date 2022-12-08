@@ -1,107 +1,87 @@
-import re
 import pprint
 
-sizes = []
+lines = open("input2.txt").readlines()
 
-
-class Tree():
-    root = {
-        'path': '',
+paths = {
+    '/': {
+        'level': 0,
         'files': [],
-        'children': []
+        'children': [],
+        'size': -1
     }
-    
-    def __init__(self, path):
-        self.root['path'] = path
+}
+cwd = '/'
+curlevel = 0
+maxlevel = 0
 
-    def addFile(self, path, filename, size):
-        curpath = self.root
-        for p in path:
-            if p == '/':
-                pass
+for l in lines:
+    if l.startswith("$ cd /"):
+        continue
+    elif l.startswith("$ ls"):
+        continue
+    elif l.startswith("dir "):
+        path = l.strip()[4:]
+        paths[cwd]['children'].append( cwd + path + '/')
+    elif l.startswith("$ cd "):
+        path = l.strip()[5:]
+        if path == "..":
+            curlevel -= 1
+            loc = cwd.rfind('/', 0, len(cwd)-1)
+            cwd = cwd[:loc+1]
+        else:
+            curlevel += 1
+            if maxlevel < curlevel:
+                maxlevel = curlevel
+
+            cwd += path + '/'
+            paths[cwd] = {
+                'level': curlevel,
+                'files': [],
+                'children': [],
+                'size': -1
+            }
+        # print(cwd)
+    elif l[0].isnumeric():
+        size = int(l[:l.find(' ')])
+        name = l[l.find(' '):].strip()
+        paths[cwd]['files'].append((name, size))
+
+for level in range(maxlevel, -1, -1):
+    for p in paths:
+        if paths[p]['level'] == level:
+            size = 0
+            if len(paths[p]['children']) == 0:
+                for f in paths[p]['files']:
+                    size += f[1]
             else:
-                for cp in curpath['children']:
-                    if cp['path'] == p:
-                        curpath = cp
-        curpath['files'].append((filename, size))
+                for children in paths[p]['children']:
+                    size += paths[children]['size']
+                for f in paths[p]['files']:
+                    size += f[1]
+            paths[p]['size'] = size
 
+# pprint.pprint(paths, sort_dicts=False)
 
-    def addPath(self, path):
-        curpath = self.root
-        # print(f"addPath: {path}")
-        for p in path:
-            # print(f'loop path {p}')
-            if p == '/':
-                # print("Root path, skipping.")
-                pass
-            else:
-                # print("Not root path, continue parsing.")
-                pathexists = False
-                for cp in curpath['children']:
-                    if cp['path'] == p:
-                        curpath = cp
-                        pathexists = True
-                        break
-                if pathexists == False:
-                    # print("\tAdding subpath.")
-                    newpath = { 
-                        'path': p,
-                        'files': [],
-                        'children': []
-                    }
-                    curpath['children'].append(newpath)
-                    curpath = newpath
-        # pprint.pprint(tree.root, sort_dicts=False)
+# Part 1
+score = 0
+for p in paths:
+    if paths[p]['size'] <= 100000:
+        score += paths[p]['size']
+print(score)
 
-def main(input):
-    tree = Tree('/')
+# Part 2
+disksize = 70000000
+currentused = paths['/']['size']
+requiredspace = 30000000
 
-    cpath = ['/']
-    for l in open(input).readlines():
-        if l.find("$ cd /") == 0 or l.find("$ ls") == 0:
-            next
-        elif l.find("$ cd ..") == 0:
-            cpath.pop()
-        elif l.find("$ cd ") == 0:
-            cpath.append(l[4:].strip())
-            tree.addPath(cpath)
-        elif l.find("dir ")>=0:
-            pass
-        else:
-            size = int(l[:l.find(' ')])
-            file = l[l.find(' '):].strip()
-            tree.addFile(cpath, file, size)
-        # print(cpath)
+available = disksize - currentused
+remainingneeded = requiredspace - available
 
-    # print("FINAL TREE")
-    pprint.pprint(tree.root, sort_dicts=False)
+# print(remainingneeded)
 
-    def part1(root, limit):
-        global sizes
+score = 30000000
 
-        score = 0
-        if len(root['children']) > 0:
-            for path in root['children']:
-                score += part1(path, limit)
-        if len(root['files']) == 0:
-            return 0
-        else:
-            for file in root['files']:
-                score += file[1]
-
-        if score > limit:
-            score = 0
-        else:
-            print(root, score)
-            sizes.append(score)
-        
-        return score
-        
-    # Part 1
-    part1(tree.root, 1000000)
-    print(sizes)
-    print(sum(sizes))
-
-if __name__ == "__main__":
-    # main("input1.txt")
-    main("input2.txt")
+for p in paths:
+    if paths[p]['size'] > remainingneeded and score > remainingneeded:
+        score = paths[p]['size']
+print(score)
