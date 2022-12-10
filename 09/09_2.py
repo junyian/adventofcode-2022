@@ -106,27 +106,27 @@ class Rope:
 
 # Part 1
 # rope = Rope(20, 11, 11)
-# rope = Rope(20, 0, 5)
+rope = Rope(20, 0, 5)
 
 # rope.printcoords()
 # rope.printmap()
 # print(rope.mapmask)
 
-# for i, l in enumerate(lines):
-#     # print(f"Line {i}:")
-#     dir, count = l.strip().split(' ')
-#     for i in range(int(count)):
-#         # print(dir)
+for i, l in enumerate(lines):
+    # print(f"Line {i}:")
+    dir, count = l.strip().split(' ')
+    for i in range(int(count)):
+        # print(dir)
         
-#         rope.movehead(dir)
-#         rope.movetail()
+        rope.movehead(dir)
+        rope.movetail()
         
-#         # rope.printcoords()
-#         # print(rope.paths)
-#         # rope.printmap()
+        # rope.printcoords()
+        # print(rope.paths)
+        # rope.printmap()
 
 # # print(rope.paths)
-# print(len(rope.paths))
+print(len(rope.paths))
 
 # Part 2
 # ropes = [Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0), Rope(20, 0, 0)]
@@ -158,9 +158,9 @@ def printmap(ropes):
     print()
 
 for i, l in enumerate(lines):
-    print(f"Line {i}:")
+    # print(f"Line {i}:")
     dir, count = l.strip().split(' ')
-    print(dir, int(count))
+    # print(dir, int(count))
     for i in range(int(count)):
         # print(f"Count {i+1}")
         for j in range(len(ropes)):
@@ -178,5 +178,5 @@ for i, l in enumerate(lines):
         # print(ropes[-2].paths)
         # input()
 
-print(ropes[-2].paths)
+# print(ropes[-2].paths)
 print(len(ropes[-2].paths))
