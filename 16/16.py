@@ -1,31 +1,34 @@
 import re
+import copy
 from pprint import pprint
 
 DEBUG = True
 
+RATETHRESHOLD = 10
 TREE = {}
+PATHS = []
 
 def log(log:str):
     if DEBUG==True:
         print(log)
 
-def walk(root, minute):
-    if minute == 30:
-        return
-    else:
-        min = minute + 1
-        log(f"== Minute {min} ==")
-        print(TREE[root]['flow'])
-        if TREE[root]['flow'] > 10:
-            log(f"You open valve {root}.")
-            min = minute + 1
-            log(f"== Minute {min} ==")
-        for child in TREE[root]['child']:
-            if TREE[child]['isOpen'] == False:
-                log(f"You move to valve {child}.")
-                walk(child, min)
-                break
+def nextaction(tree, paths):
+    pass
 
+def generatePaths(tree):
+    global PATHS
+    if len(PATHS) == 0:
+        if tree['AA']['flow'] < RATETHRESHOLD:
+            for child in tree['AA']['child']:
+                action = ('AA', 'travel', child, 1)
+                path = [action]
+                PATHS.append(path)
+    else:
+        path = PATHS.pop(0)
+
+    pprint(PATHS)
+
+    
 def solve(input:str):
     part1, part2 = 0, 0
 
@@ -38,9 +41,8 @@ def solve(input:str):
                 'child': valve_tgt.split(', '),
                 'isOpen': False
             }
-    walk('AA', 0)
-
-    pprint(TREE)
+    generatePaths(TREE)
+    # pprint(TREE)
     return (part1, part2)
 
 if __name__ == "__main__":
